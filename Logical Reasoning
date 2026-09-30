@@ -1,0 +1,115 @@
+# Rule-Based Expert System using Backward Chaining
+# Student Academic Guidance
+
+# -----------------------------
+# Facts about the student
+# -----------------------------
+facts = {
+    "GoodAttendance",
+    "GoodAcademicPerformance",
+    "CompletedProjects",
+    "StrongProgrammingSkills"
+}
+
+# -----------------------------
+# Rules for academic guidance
+# -----------------------------
+rules = {
+    "EligibleForPlacement": [
+        ["GoodAcademicPerformance", "GoodAttendance", "CompletedProjects"]
+    ],
+
+    "GoodAcademicPerformance": [
+        ["GoodAttendance", "RegularStudy"]
+    ],
+
+    "NeedsExtraPractice": [
+        ["WeakProgrammingSkills"],
+        ["LowMarks"]
+    ],
+
+    "PlacementReady": [
+        ["EligibleForPlacement", "StrongProgrammingSkills"]
+    ]
+}
+
+# Additional facts
+facts.add("RegularStudy")
+
+
+# -----------------------------
+# Backward Chaining Function
+# -----------------------------
+def backward_chaining(goal, visited=None):
+
+    if visited is None:
+        visited = set()
+
+    print("Trying to prove:", goal)
+
+    # If goal is already a fact
+    if goal in facts:
+        print("  Fact found:", goal)
+        return True
+
+    # Avoid infinite loops
+    if goal in visited:
+        return False
+
+    visited.add(goal)
+
+    # Check rules that can prove the goal
+    if goal not in rules:
+        print("  No rule found for:", goal)
+        return False
+
+    # Try each rule
+    for conditions in rules[goal]:
+
+        print("  Rule found for", goal)
+        print("  Required conditions:", conditions)
+
+        all_true = True
+
+        # Prove each condition
+        for condition in conditions:
+            if not backward_chaining(condition, visited):
+                all_true = False
+                break
+
+        if all_true:
+            print("  Successfully proved:", goal)
+            return True
+
+    print("  Could not prove:", goal)
+    return False
+
+
+# -----------------------------
+# Select the goal
+# -----------------------------
+goal = "EligibleForPlacement"
+
+print("STUDENT ACADEMIC GUIDANCE SYSTEM")
+print("----------------------------------")
+
+print("\nFacts:")
+for fact in facts:
+    print("-", fact)
+
+print("\nGoal:", goal)
+print("\nReasoning Steps:")
+print("----------------")
+
+result = backward_chaining(goal)
+
+# -----------------------------
+# Final Conclusion
+# -----------------------------
+print("\nFinal Conclusion:")
+print("-----------------")
+
+if result:
+    print("The student is Eligible for Placement.")
+else:
+    print("The student is NOT Eligible for Placement.")
